@@ -7,7 +7,7 @@ with open('HISTORY.md') as history_file:
     HISTORY = history_file.read()
 
 setup(
-    name='pymesomb',
+    name='pymautic',
     version='0.1.0',
     description='Python client for Mautic',
     long_description_content_type="text/markdown",

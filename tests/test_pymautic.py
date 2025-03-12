@@ -5,8 +5,6 @@
 
 import unittest
 
-from pymautic import pymautic
-
 
 class TestPymautic(unittest.TestCase):
     """Tests for `pymautic` package."""

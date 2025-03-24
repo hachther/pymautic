@@ -185,6 +185,20 @@ class CategoryClient(MauticAPI):
         return self.perform_request('post', 'categories/new', data={'title': title, 'bundle': bundle})
 
 
+class AnalyticClient(MauticAPI):
+    def log_event(self, contact: int, event: str, properties: Dict[str, Any], date: Optional[datetime] = None):
+        data = {
+            'name': event,
+            'properties': properties,
+            'contact': contact
+        }
+
+        if date is not None:
+            data['date'] = date.isoformat()
+
+        return self.perform_request('post', 'analytic/log/event', data=data)
+
+
 class MauticClient:
     def __init__(self, username: str, password: str, host: str):
         self.username = username
@@ -196,6 +210,7 @@ class MauticClient:
         self.emails = EmailClient(username, password, host)
         self.segments = SegmentClient(username, password, host)
         self.categories = CategoryClient(username, password, host)
+        self.analytics = AnalyticClient(username, password, host)
 
 
     # @staticmethod

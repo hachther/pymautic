@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 from urllib.parse import urlencode
@@ -127,11 +128,17 @@ class FCMDeviceClient(MauticAPI):
     def create(self, data: Dict[str, Any]):
         return self.perform_request('post', 'fcm/devices/add', data=data)
 
+    def get(self, device_id: str):
+        return self.perform_request('get', f'fcm/devices/{device_id}')
+
     def update(self, device_id: str, data: Dict[str, Any]):
         return self.perform_request('patch', f'fcm/devices/{device_id}/edit', data=data)
 
     def delete(self, device_id: str):
         return self.perform_request('delete', f'fcm/devices/{device_id}')
+
+    def active(self, device_id: str):
+        return self.perform_request('patch', f'fcm/devices/{device_id}/active')
 
 
 class EmailClient(MauticAPI):

@@ -59,11 +59,58 @@ class MauticAPI:
         return r.json()
 
 
+class CompanyClient(MauticAPI):
+    def get(self, contact_id: str):
+        """
+        Retrieve company from mautic system
+        :param compnay_id: ID of compnay in mautic system
+        """
+        ret = self.perform_request('get', f'companies/{contact_id}').get('contact')['fields']['all']
+        return {k.replace('company', ''): v for k, v in ret.items()}
+
+    def create(self, data: Dict[str, Any]):
+        if 'country' in data:
+            data['country'] = clean_country(data['country'])
+
+        data = {f'company{k}': v for k, v in data.items()}
+        ret = self.perform_request('post', 'companies/new', data=data).get('company')['fields']['all']
+        return {k.replace('company', ''): v for k, v in ret.items()}
+
+    def update(self, company_id: str, data: Dict[str, Any]):
+        if 'country' in data:
+            data['country'] = clean_country(data['country'])
+
+        data = {f'company{k}': v for k, v in data.items()}
+        ret = self.perform_request('patch', f'companies/{company_id}/edit', data=data).get('company')['fields']['all']
+        return {k.replace('company', ''): v for k, v in ret.items()}
+
+    def upsert(self, company_id: str, data: Dict[str, Any]):
+        if 'country' in data:
+            data['country'] = clean_country(data['country'])
+
+        data = {f'company{k}': v for k, v in data.items()}
+        ret = self.perform_request('put', f'companies/{company_id}/edit', data=data).get('company')['fields']['all']
+        return {k.replace('company', ''): v for k, v in ret.items()}
+
+    def delete(self, company_id: str):
+        self.perform_request('delete', f'companies/{company_id}')
+
+    def add_contact(self, company_id: str, contact_id: str):
+        self.perform_request('post', f'companies/{company_id}/contact/{contact_id}/add')
+
+    def remove_contact(self, company_id: str, contact_id: str):
+        self.perform_request('post', f'companies/{company_id}/contact/{contact_id}/remove')
+
+    def list(self):
+        companies = self.perform_request('put', f'companies').get('companies')
+        [{k.replace('company', ''): v for k, v in c} for c in companies.values()]
+
+
 class ContactClient(MauticAPI):
     def get(self, contact_id: str):
         """
-        Retrieve lead from campaign system
-        :param contact_id: ID of lead in campaign system
+        Retrieve lead from mautic system
+        :param contact_id: ID of lead in mautic system
         """
         return self.perform_request('get', f'contacts/{contact_id}').get('contact')
 
@@ -122,6 +169,9 @@ class ContactClient(MauticAPI):
     def dnc(self, contact_id: str, channel: str, reason: int):
         return self.perform_request('post', f'contacts/{contact_id}/dnc/{channel}/add',
                                     data={'reason': reason}).get('contact')
+
+    def delete(self, contact_id: str):
+        self.perform_request('delete', f'contacts/{contact_id}')
 
 
 class FCMDeviceClient(MauticAPI):
@@ -219,6 +269,7 @@ class MauticClient:
         self.segments = SegmentClient(username, password, host)
         self.categories = CategoryClient(username, password, host)
         self.analytics = AnalyticClient(username, password, host)
+        self.companies = CompanyClient(username, password, host)
 
 
     # @staticmethod

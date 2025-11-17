@@ -254,7 +254,7 @@ class AnalyticClient(MauticAPI):
         if date is not None:
             data['date'] = date.isoformat()
 
-        return self.perform_request('post', 'api/analytic/hits', data=data)
+        return self.perform_request('post', 'analytic/hits', data=data)
 
 
 class MauticClient:
